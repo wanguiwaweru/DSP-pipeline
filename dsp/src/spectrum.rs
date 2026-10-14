@@ -1,35 +1,35 @@
+use crate::window::DspError;
+use num_complex::Complex;
 use realfft::{RealFftPlanner, RealToComplex};
 use std::sync::Arc;
 
-pub struct SpectrumProcessor {
-    fft: Arc<dyn RealToComplex<f32>>,
-    output: Vec<num_complex::Complex32>,
-    scratch: Vec<num_complex::Complex32>,
+/// Real-to-Complex Forward FFT wrapper with zero hot-path allocations.
+pub struct SpectrumAnalyzer {
+    plan: Arc<dyn RealToComplex<f32>>,
+    bins: Vec<Complex<f32>>,
+    scratch: Vec<Complex<f32>>,
 }
 
-impl SpectrumProcessor {
-    pub fn new(frame_size: usize) -> Self {
-        let mut planner = RealFftPlanner::<f32>::new();
-        let fft = planner.plan_fft_forward(frame_size);
+impl SpectrumAnalyzer {
+    pub fn new(n: usize) -> Self {
+        let plan = RealFftPlanner::<f32>::new().plan_fft_forward(n);
+        let bins = plan.make_output_vec();
+        let scratch = plan.make_scratch_vec();
 
-        let output = fft.make_output_vec();
-        let scratch = fft.make_scratch_vec();
-
-        Self {
-            fft,
-            output,
-            scratch,
-        }
+        Self { plan, bins, scratch }
     }
 
-    pub fn process(&mut self, input: &[f32]) -> &[num_complex::Complex32] {
-        assert_eq!(input.len(), self.fft.len());
+    /// Computes FFT from a windowed frame directly into complex output bins[cite: 1].
+    #[inline]
+    pub fn compute(&mut self, windowed_frame: &mut [f32]) -> Result<&[Complex<f32>], DspError> {
+        self.plan
+            .process_with_scratch(windowed_frame, &mut self.bins, &mut self.scratch)
+            .map_err(|_| DspError::Fft)?;
 
-        let mut input_buffer = input.to_vec();
-        self.fft
-            .process_with_scratch(&mut input_buffer, &mut self.output, &mut self.scratch)
-            .expect("FFT processing failed");
+        Ok(&self.bins)
+    }
 
-        &self.output
+    pub fn num_bins(&self) -> usize {
+        self.bins.len()
     }
 }
