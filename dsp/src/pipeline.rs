@@ -4,14 +4,14 @@ use crate::window::{DspError, apply_window, hann};
 
 
 pub struct FramePipeline {
-    window: Vec<f32>,   // Hann window coefficients[cite: 1]
-    windowed: Vec<f32>, // Reused buffer for windowed audio frame[cite: 1]
+    window: Vec<f32>,   // Hann window coefficients
+    windowed: Vec<f32>, // Reused buffer for windowed audio frame
     analyzer: SpectrumAnalyzer,
     extractor: FeatureExtractor,
 }
 
 impl FramePipeline {
-    /// SETUP · Runs once. All memory allocation occurs here[cite: 1].
+    /// SETUP · Runs once. All memory allocation occurs here
     pub fn new(n: usize, bands: usize) -> Self {
         let analyzer = SpectrumAnalyzer::new(n);
         let extractor = FeatureExtractor::new(analyzer.num_bins(), bands);
@@ -24,19 +24,18 @@ impl FramePipeline {
         }
     }
 
-    /// PER FRAME · Zero hot-path dynamic allocations[cite: 1].
     pub fn process(&mut self, frame: &[f32], out: &mut [f32]) -> Result<(), DspError> {
         if frame.len() != self.window.len() {
             return Err(DspError::LenMismatch);
         }
 
-        // 1. Apply Window into reused scratch buffer[cite: 1]
+        // 1. Apply Window into reused scratch buffer
         apply_window(frame, &self.window, &mut self.windowed)?;
 
-        // 2. Compute RealFFT with reused scratch space[cite: 1]
+        // 2. Compute RealFFT with reused scratch space
         let bins = self.analyzer.compute(&mut self.windowed)?;
 
-        // 3. Extract power features into caller-owned output buffer[cite: 1]
+        // 3. Extract power features into caller-owned output buffer
         self.extractor.extract(bins, out)?;
 
         Ok(())
