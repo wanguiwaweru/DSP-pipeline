@@ -2,7 +2,6 @@ use crate::features::FeatureExtractor;
 use crate::spectrum::SpectrumAnalyzer;
 use crate::window::{DspError, apply_window, hann};
 
-
 pub struct FramePipeline {
     window: Vec<f32>,   // Hann window coefficients
     windowed: Vec<f32>, // Reused buffer for windowed audio frame

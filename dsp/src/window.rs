@@ -15,11 +15,7 @@ pub fn hann(n: usize) -> Vec<f32> {
 
 /// Applies pre-computed window coefficients to an input frame.
 /// Hot Path: Zero dynamic heap allocations.
-pub fn apply_window(
-    input: &[f32],
-    window: &[f32],
-    out: &mut [f32],
-) -> Result<(), DspError> {
+pub fn apply_window(input: &[f32], window: &[f32], out: &mut [f32]) -> Result<(), DspError> {
     if input.len() != window.len() || out.len() != input.len() {
         return Err(DspError::LenMismatch);
     }
@@ -30,4 +26,3 @@ pub fn apply_window(
 
     Ok(())
 }
-

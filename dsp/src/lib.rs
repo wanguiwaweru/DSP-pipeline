@@ -8,4 +8,4 @@ pub use features::FeatureExtractor;
 pub use framing::FrameIterator;
 pub use pipeline::FramePipeline;
 pub use spectrum::SpectrumAnalyzer;
-pub use window::{apply_window, hann, DspError};
+pub use window::{DspError, apply_window, hann};

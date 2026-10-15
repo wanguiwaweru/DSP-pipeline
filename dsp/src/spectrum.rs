@@ -16,7 +16,11 @@ impl SpectrumAnalyzer {
         let bins = plan.make_output_vec();
         let scratch = plan.make_scratch_vec();
 
-        Self { plan, bins, scratch }
+        Self {
+            plan,
+            bins,
+            scratch,
+        }
     }
 
     /// Computes FFT from a windowed frame directly into complex output bins

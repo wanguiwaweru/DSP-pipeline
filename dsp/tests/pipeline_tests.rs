@@ -11,10 +11,7 @@ fn silence_produces_zero_power() {
     assert_eq!(power.len(), frame_size / 2 + 1);
 
     for &value in power {
-        assert!(
-            value.abs() < 1e-6,
-            "expected zero power, got {value}"
-        );
+        assert!(value.abs() < 1e-6, "expected zero power, got {value}");
     }
 }
 
@@ -26,9 +23,7 @@ fn sine_wave_produces_finite_nonnegative_power() {
 
     let frame: Vec<f32> = (0..frame_size)
         .map(|i| {
-            let phase =
-                2.0 * std::f32::consts::PI * frequency * i as f32
-                    / sample_rate;
+            let phase = 2.0 * std::f32::consts::PI * frequency * i as f32 / sample_rate;
             phase.sin()
         })
         .collect();
@@ -59,9 +54,7 @@ fn can_process_multiple_frames_sequentially() {
     assert!(first.iter().all(|&p| p.abs() < 1e-6));
 
     let tone: Vec<f32> = (0..frame_size)
-        .map(|i| {
-            (2.0 * std::f32::consts::PI * i as f32 / 16.0).sin()
-        })
+        .map(|i| (2.0 * std::f32::consts::PI * i as f32 / 16.0).sin())
         .collect();
 
     let second = pipeline.process_frame(&tone);
