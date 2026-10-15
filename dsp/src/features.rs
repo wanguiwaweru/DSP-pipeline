@@ -1,7 +1,7 @@
 use crate::window::DspError;
 use num_complex::Complex;
 
-/// Computes feature band edges and groups complex power spectrum into band energies[cite: 1].
+/// Computes feature band edges and groups complex power spectrum into band energies
 pub struct FeatureExtractor {
     edges: Vec<usize>,
 }
@@ -15,7 +15,7 @@ impl FeatureExtractor {
         Self { edges }
     }
 
-    /// Sums squared magnitude (Re² + Im²) across frequency bands into caller-owned buffer[cite: 1].
+    /// Sums squared magnitude (Re² + Im²) across frequency bands into caller-owned buffer
     #[inline]
     pub fn extract(&self, bins: &[Complex<f32>], out: &mut [f32]) -> Result<(), DspError> {
         if out.len() != self.edges.len() - 1 || bins.len() != *self.edges.last().unwrap() {
@@ -25,7 +25,7 @@ impl FeatureExtractor {
         for (o, e) in out.iter_mut().zip(self.edges.windows(2)) {
             *o = bins[e[0]..e[1]]
                 .iter()
-                .map(|c| c.norm_sqr()) // Power calculation: Re² + Im²[cite: 1]
+                .map(|c| c.norm_sqr()) // Power calculation: Re² + Im²
                 .sum();
         }
 
