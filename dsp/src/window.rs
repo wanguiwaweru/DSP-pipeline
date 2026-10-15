@@ -14,7 +14,6 @@ pub fn hann(n: usize) -> Vec<f32> {
 }
 
 /// Applies pre-computed window coefficients to an input frame in-place.
-/// 
 /// Hot Path: Zero dynamic heap allocations.
 pub fn apply_window(
     input: &[f32],
