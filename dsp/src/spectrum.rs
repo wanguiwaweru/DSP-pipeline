@@ -19,7 +19,7 @@ impl SpectrumAnalyzer {
         Self { plan, bins, scratch }
     }
 
-    /// Computes FFT from a windowed frame directly into complex output bins[cite: 1].
+    /// Computes FFT from a windowed frame directly into complex output bins
     #[inline]
     pub fn compute(&mut self, windowed_frame: &mut [f32]) -> Result<&[Complex<f32>], DspError> {
         self.plan
